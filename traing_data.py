@@ -11,7 +11,7 @@ class GetSequence:
 
     def __init__(self):
         self.all_files = list(glob.iglob('data/*.wav'))
-        self.split_at = 10000
+        self.split_at = 5000
         self.min_max_scaler = preprocessing.MinMaxScaler(feature_range=(0, 1))
 
     def get_sequnce(self):
@@ -25,11 +25,11 @@ class GetSequence:
             # value_array = value_array/ np.linalg.norm(value_array)
             value_array = np.delete(value_array, 1)
             seq = value_array.shape
-            while temp < seq[0]:
-                in_val = torch.from_numpy(value_array[temp * self.split_at : (temp+1) * self.split_at])
+            while temp + self.split_at + 1 < seq[0]:
+                in_val = torch.from_numpy(value_array[temp: temp+ self.split_at])
                 # lab_val = torch.from_numpy(value_array[(temp * self.split_at) + self.diff : ((temp+1) * self.split_at) + self.diff])
-                lab_val = torch.tensor([value_array[((temp+1) * self.split_at) + 1]])
-                temp += self.split_at
+                lab_val = torch.tensor([value_array[(temp + self.split_at + 1)]])
+                temp += 1
                 yield in_val, lab_val
                 
     def get_train_data(self):
